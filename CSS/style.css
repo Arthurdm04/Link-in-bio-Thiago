@@ -11,14 +11,23 @@
   --ring: 0 0 0 3px rgba(0,191,165,.28);
 }
 
-*, *::before, *::after{box-sizing:border-box}
-html,body{height:100%}
+*, *::before, *::after{ box-sizing:border-box }
+
+/* pinta o fundo também no html e evita faixa lateral */
+html{
+  height:100%;
+  background:#0a1915;
+  color-scheme: dark;
+}
 
 body{
   margin:0;
+  height:100%;
   color:var(--text);
   font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;
   -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;                 /* evita “vazar” para o lado */
+  overscroll-behavior-y: none;       /* reduz o bounce do iOS */
 
   /* fundo com profundidade extra */
   background:
@@ -28,6 +37,8 @@ body{
     linear-gradient(160deg, var(--bg1), var(--bg2));
 
   display:flex;
+  /* viewport segura no mobile (iOS/Android) */
+  min-height:100svh;
   min-height:100dvh;
   padding: max(18px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
   align-items:center;
@@ -42,43 +53,50 @@ body{
   margin:0 auto;
   text-align:center;
 
-  /* glass mais refinado */
-  background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+  /* fallback do glass */
+  background:rgba(255,255,255,.06);
   border:1px solid var(--line);
   border-radius:18px;
-  backdrop-filter: blur(10px);
   box-shadow:
     0 10px 30px rgba(0,0,0,.45),
     inset 0 1px 0 rgba(255,255,255,.04);
   padding:22px 16px;
 }
 
+/* ativa o glass real quando suportado */
+@supports (backdrop-filter: blur(10px)){
+  .card{
+    background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+}
+
 /* Avatar com glow/borda (serve para foto também) */
 .avatar{
-  --size: 110px;                 /* ajuste o tamanho uma vez só */
-  width: var(--size);
-  height: var(--size);
-  margin: 2px auto 10px;
-  border-radius: 50%;
-  overflow: hidden;              /* garante o círculo */
-  border: 2px solid rgba(255,255,255,.18);
-  box-shadow: 0 8px 24px rgba(0,0,0,.35), 0 0 0 6px rgba(0,191,165,.06);
+  --size:112px;                      /* +presença */
+  width:var(--size);
+  height:var(--size);
+  margin:2px auto 10px;
+  border-radius:50%;
+  overflow:hidden;                   /* garante o círculo */
+  border:2px solid rgba(255,255,255,.18);
+  box-shadow:0 8px 24px rgba(0,0,0,.35), 0 0 0 6px rgba(0,191,165,.06);
   background:
     radial-gradient(circle at 30% 30%, rgba(0,191,165,.18), transparent 60%),
     #0c1f1b;
 }
-
 .avatar img{
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: cover;             /* preenche sem distorcer */
-  object-position: 50% 25%;      /* <<< move o enquadramento (x% y%) */
-  border-radius: 50%;
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;                  /* preenche sem distorcer */
+  object-position:50% 28%;           /* foca um pouco mais alto */
+  border-radius:50%;
 }
 
 /* Links (toque grande) */
-.links{display:flex; flex-direction:column; gap:12px; margin:16px 0 6px}
+.links{ display:flex; flex-direction:column; gap:12px; margin:16px 0 6px }
 .btn{
   display:flex; align-items:center; justify-content:center; gap:10px;
   min-height:56px; line-height:1;
@@ -98,41 +116,52 @@ body{
   content:""; position:absolute; inset:-1px; border-radius:16px; pointer-events:none;
   border:1px solid rgba(0,191,165,.28);
 }
-.btn:hover{
-  transform:translateY(-1px);
-  box-shadow:0 10px 28px rgba(0,0,0,.35);
-  border-color:rgba(0,191,165,.45);
-  background:rgba(255,255,255,.08);
+
+/* hovers só quando existir mouse (evita “pulos” no touch) */
+@media (hover:hover) and (pointer:fine){
+  .btn:hover{
+    transform:translateY(-1px);
+    box-shadow:0 10px 28px rgba(0,0,0,.35);
+    border-color:rgba(0,191,165,.45);
+    background:rgba(255,255,255,.08);
+  }
 }
-.btn:active{transform:translateY(0)}
+
+.btn:active{ transform:translateY(0) }
 
 .icon{
   width:22px; height:22px; color:var(--teal);
   transition:transform .18s ease, filter .18s ease;
 }
-.btn:hover .icon{ transform:translateX(2px); filter:brightness(1.05) }
+@media (hover:hover) and (pointer:fine){
+  .btn:hover .icon{ transform:translateX(2px); filter:brightness(1.05) }
+}
 
 /* foco acessível */
-.btn:focus{outline:none}
-.btn:focus-visible{ box-shadow: var(--ring); }
+.btn:focus{ outline:none }
+.btn:focus-visible{
+  box-shadow: var(--ring);
+  outline:2px solid rgba(0,191,165,.55);
+  outline-offset:2px;
+}
 
 /* Rodapé */
-footer{margin-top:14px; font-size:.9rem; color:var(--muted)}
+footer{ margin-top:14px; font-size:.9rem; color:var(--muted) }
 
 /* ===== Acessibilidade & preferência do usuário ===== */
 @media (prefers-reduced-motion: reduce){
-  *{scroll-behavior:auto; transition:none!important}
+  *{ scroll-behavior:auto; transition:none!important }
 }
 
 /* ===== Ajustes para telas muito pequenas ===== */
 @media (max-width:380px){
-  .card{padding:18px 12px}
-  .btn{min-height:54px; border-radius:14px}
-  .icon{width:20px; height:20px}
+  .card{ padding:18px 12px }
+  .btn{ min-height:54px; border-radius:14px }
+  .icon{ width:20px; height:20px }
 }
 
 /* ===== Desktop (respira mais) ===== */
 @media (min-width:680px){
-  .card{padding:30px 24px; max-width:520px}
-  .btn{min-height:58px}
+  .card{ padding:30px 24px; max-width:520px }
+  .btn{ min-height:58px }
 }
