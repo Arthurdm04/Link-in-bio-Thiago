@@ -53,27 +53,28 @@ body{
   padding:22px 16px;
 }
 
-/* Avatar sem foto com leve glow */
+/* Avatar com glow/borda (serve para foto também) */
 .avatar{
-  width:100px; height:100px; margin:2px auto 8px;
-  border-radius:999px; display:grid; place-items:center; color:#9fdad1;
+  --size: 110px;                 /* ajuste o tamanho uma vez só */
+  width: var(--size);
+  height: var(--size);
+  margin: 2px auto 10px;
+  border-radius: 50%;
+  overflow: hidden;              /* garante o círculo */
+  border: 2px solid rgba(255,255,255,.18);
+  box-shadow: 0 8px 24px rgba(0,0,0,.35), 0 0 0 6px rgba(0,191,165,.06);
   background:
     radial-gradient(circle at 30% 30%, rgba(0,191,165,.18), transparent 60%),
     #0c1f1b;
-  border:2px solid rgba(255,255,255,.18);
-  box-shadow:
-    0 8px 24px rgba(0,0,0,.35),
-    0 0 0 6px rgba(0,191,165,.06);
 }
-.avatar svg{ width:44px; height:44px; opacity:.9 }
 
-.handle{font-weight:800; letter-spacing:.2px; margin-top:6px; font-size:1.15rem}
-.badge{
-  display:inline-flex; align-items:center; gap:8px;
-  margin:10px auto 2px; font-size:.9rem; color:#d8fffa;
-  background:rgba(0,191,165,.12);
-  border:1px solid rgba(0,191,165,.35);
-  padding:6px 12px; border-radius:999px
+.avatar img{
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;             /* preenche sem distorcer */
+  object-position: 50% 25%;      /* <<< move o enquadramento (x% y%) */
+  border-radius: 50%;
 }
 
 /* Links (toque grande) */
